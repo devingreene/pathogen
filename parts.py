@@ -30,14 +30,16 @@ def Gen(mu,initial,L,fitness,recom):
 
         while True:
             yield state
-            if ( nmutants := np.random.poisson(mu*nloci)):
+            nmutants = np.random.poisson(mu*nloci)
+            if ( nmutants ):
                 mutants = np.random.choice(
                         np.arange(nloci,dtype='int64'),
                         nmutants,
                         replace=False)
                 state[x.flat[mutants],y.flat[mutants]] ^= 1<<z.flat[mutants]
 
-            if (nrevts := np.random.poisson(recom*size)):
+            nrevts = np.random.poisson(recom*size)
+            if (nrevts):
 
                 revts = np.random.choice(
                         np.arange(0,size,dtype='int64'),
