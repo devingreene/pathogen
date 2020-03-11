@@ -5,9 +5,16 @@ import random
 
 iterant = [[-1,0],[1,0],[0,-1],[0,1]]
 
-def Gen(mu,initial,L,fitness,recom):
+def Gen(mu,initial,fitness,recom):
 
-    assert(2**L == len(fitness))
+    L = 1
+    while 2**L < len(fitness):
+        L *= 2
+
+    if 2**L != len(fitness):
+        raise ValueError(
+                "`fitness' should have length a power of 2")
+    
     fitness = np.asarray(fitness)
 
     eps = 0.5*min(abs(x-y) for x,y in 
