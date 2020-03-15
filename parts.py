@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
@@ -5,7 +6,7 @@ import random
 
 iterant = [[-1,0],[1,0],[0,-1],[0,1]]
 
-def Gen(mu,initial,fitness,recom):
+def Gen(mu,initial,fitness,recom,prb):
 
     L = 1
     while 2**L < len(fitness):
@@ -68,6 +69,8 @@ def Gen(mu,initial,fitness,recom):
             best[:] = state
             fit[:] = ( fitness[state] + 
                     np.random.uniform(eps/4,eps/2,state.shape) )
+            fit[( state == 0 ) & ( np.random.random(state.shape) < prb ) ] = \
+                    np.inf
             nfit[:] = fit
             for i,j in iterant:
                 candidate = state[(X+i)%M,(Y+j)%N]
