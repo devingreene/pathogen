@@ -19,11 +19,13 @@ mu,recom = (
 vmax = len(fitness) - 1
 
 initial = np.zeros((M,N),dtype="int64")
+
+exposure_rate = 0.7
 #######################################################
 #######################################################
 #######################################################
 
-gen = Gen(mu,initial,fitness,recom)
+gen = Gen(mu,initial,fitness,recom,exposure_rate)
 
 fig = plt.figure(figsize=(8,8))
 ax = fig.add_axes([0,0,1,1])

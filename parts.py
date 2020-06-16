@@ -5,7 +5,7 @@ import random
 
 iterant = [[-1,0],[1,0],[0,-1],[0,1]]
 
-def Gen(mu,initial,fitness,recom):
+def Gen(mu,initial,fitness,recom,exposure_rate):
 
     L = 1
     while 2**L < len(fitness):
@@ -44,10 +44,13 @@ def Gen(mu,initial,fitness,recom):
                         replace=False)
                 state[x.flat[mutants],y.flat[mutants]] ^= 1<<z.flat[mutants]
 
-            if (nrevts := np.random.poisson(recom*size)):
+            # Select cells to be affected by neighboring cells
+            exposure_idx = np.arange(0,size)[np.random.random(size=size) < exposure_rate]
+
+            if (nrevts := np.random.poisson(recom*size*exposure_rate)):
 
                 revts = np.random.choice(
-                        np.arange(0,size,dtype='int64'),
+                        exposure_idx,
                         nrevts,
                         replace=False)
 
@@ -69,6 +72,7 @@ def Gen(mu,initial,fitness,recom):
             fit[:] = ( fitness[state] + 
                     np.random.uniform(eps/4,eps/2,state.shape) )
             nfit[:] = fit
+            eX,eY = X.flat[exposure_idx],Y.flat[exposure_idx]
             for i,j in iterant:
                 candidate = state[(X+i)%M,(Y+j)%N]
                 fit_[:] = fit[(X+i)%M,(Y+j)%N]
@@ -80,9 +84,5 @@ def Gen(mu,initial,fitness,recom):
                         fit_ > nfit,
                         (nfit,fit_)
                         )
-            state[:] = best
+            state[eX,eY] = best[eX,eY]
     return gen
-        
-def makeframe(state,loci,img):
-    img.set_data(state)
-    return [img]
