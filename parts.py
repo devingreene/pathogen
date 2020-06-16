@@ -47,7 +47,7 @@ def Gen(mu,initial,fitness,recom):
             if (nrevts := np.random.poisson(recom*size)):
 
                 revts = np.random.choice(
-                        np.arange(0,size,dtype='int64'),
+                        np.arange(0,size),
                         nrevts,
                         replace=False)
 
