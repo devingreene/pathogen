@@ -39,7 +39,8 @@ def Gen(mu,initial,fitness,recom,exposure_rate,migration_rate):
             yield state
 
             # Migration
-            if nmigrations := np.random.poisson(migration_rate*size):
+            nmigrations = np.random.poisson(migration_rate*size)
+            if ( nmigrations ):
                 mig_src = np.random.choice(np.arange(size),nmigrations,replace=False)
                 mig_dst = np.random.choice(np.arange(size),nmigrations,replace=False)
 
