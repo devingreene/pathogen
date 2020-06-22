@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 import itertools
 import random
 
-iterant = [[-1,0],[1,0],[0,-1],[0,1]]
+neighbors = [[-1,0],[1,0],[0,-1],[0,1]]
 
-def Gen(mu,initial,fitness,recom):
+def Gen(mu,initial,fitness,recom,exposure_rate,migration_rate):
 
     L = 1
     while 2**L < len(fitness):
@@ -37,6 +37,16 @@ def Gen(mu,initial,fitness,recom):
 
         while True:
             yield state
+
+            # Migration
+            if nmigrations := np.random.poisson(migration_rate*size):
+                mig_src = np.random.choice(np.arange(size),nmigrations,replace=False)
+                mig_dst = np.random.choice(np.arange(size),nmigrations,replace=False)
+
+                state.flat[mig_dst] = \
+                        state.flat[mig_src]
+
+            # Mutation
             nmutants = np.random.poisson(mu*nloci)
             if ( nmutants ):
                 mutants = np.random.choice(
@@ -45,11 +55,14 @@ def Gen(mu,initial,fitness,recom):
                         replace=False)
                 state[x.flat[mutants],y.flat[mutants]] ^= 1<<z.flat[mutants]
 
+            # Select cells to be affected by neighboring cells
+            exposure_idx = np.arange(0,size)[np.random.random(size=size) < exposure_rate]
+
+            # Recombination
             nrevts = np.random.poisson(recom*size)
             if (nrevts):
-
                 revts = np.random.choice(
-                        np.arange(0,size,dtype='int64'),
+                        exposure_idx,
                         nrevts,
                         replace=False)
 
@@ -62,16 +75,18 @@ def Gen(mu,initial,fitness,recom):
                 rX,rY = X.flat[revts],Y.flat[revts]
                 loc = np.zeros(nrevts,dtype='int64')
 
-                for i,j in iterant:
+                for i,j in neighbors:
                     loc |= state[rX,rY] ^ state[(rX+i)%M,(rY+j)%N]
 
                 state[rX,rY] = loc & mask
 
+            # Fitness
             best[:] = state
             fit[:] = ( fitness[state] + 
                     np.random.uniform(eps/4,eps/2,state.shape) )
             nfit[:] = fit
-            for i,j in iterant:
+            eX,eY = X.flat[exposure_idx],Y.flat[exposure_idx]
+            for i,j in neighbors:
                 candidate = state[(X+i)%M,(Y+j)%N]
                 fit_[:] = fit[(X+i)%M,(Y+j)%N]
                 best[:] = np.choose(
@@ -82,9 +97,5 @@ def Gen(mu,initial,fitness,recom):
                         fit_ > nfit,
                         (nfit,fit_)
                         )
-            state[:] = best
+            state[eX,eY] = best[eX,eY]
     return gen
-        
-def makeframe(state,loci,img):
-    img.set_data(state)
-    return [img]
