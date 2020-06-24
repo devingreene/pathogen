@@ -13,21 +13,14 @@ from utils import bitlength
 #######################################################
 M,N = 400,400
 
-#fitness=[1,
-#        1.1,1.1,1.1,1.1,
-#        1.2,0,0,0,0,1.2,
-#        0,0,0,0,
-#        1.3]
-
-fitness = [ 1,
-        1.1,1.1,1.1,1.1,1.1,
-        1.2,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,1.2,
-        0,0,0,0,0,
+fitness=[1,
+        1.1,1.1,1.1,1.1,
+        1.2,0,0,0,0,1.2,
+        0,0,0,0,
         1.3]
+
 # Convert to numerical order
 fitness = lex2num(fitness)
-print(len(fitness))
 
 nloci = bitlength(len(fitness))
 
