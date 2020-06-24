@@ -1,9 +1,4 @@
-def nset(n):
-    cnt = 0
-    while n:
-        cnt += n & 1
-        n >>= 1
-    return cnt
+from utils import nset
 
 def num2lex(lst):
     def key(n):

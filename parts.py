@@ -9,7 +9,7 @@ def Gen(mu,initial,fitness,recom,exposure_rate,migration_rate):
 
     L = 1
     while 2**L < len(fitness):
-        L *= 2
+        L += 1
 
     if 2**L != len(fitness):
         raise ValueError(
